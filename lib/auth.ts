@@ -4,7 +4,7 @@ import { getCollection } from './db'
 import bcryptjs from 'bcryptjs'
 import { User } from './types'
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+const handler = NextAuth({
   secret: process.env.NEXTAUTH_SECRET || 'smartkot_secret_123',
   session: {
     strategy: 'jwt',
@@ -75,3 +75,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     signIn: '/login',
   },
 })
+
+export { handler }
+export const auth = handler
