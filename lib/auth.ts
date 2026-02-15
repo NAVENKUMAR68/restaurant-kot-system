@@ -10,14 +10,22 @@ let mongoClient: MongoClient | null = null
 
 async function getMongoClient(): Promise<MongoClient> {
   if (!mongoClient) {
-    const { client } = await connectToDatabase()
-    mongoClient = client
+    try {
+      const { client } = await connectToDatabase()
+      mongoClient = client
+    } catch (error) {
+      console.error('[v0] Error getting MongoDB client:', error)
+      throw error
+    }
   }
   return mongoClient
 }
 
+// Only initialize adapter if MONGODB_URI is available
+const adapter = process.env.MONGODB_URI ? MongoDBAdapter(getMongoClient()) : undefined
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: MongoDBAdapter(getMongoClient()),
+  ...(adapter && { adapter }),
   secret: process.env.NEXTAUTH_SECRET || 'smartkot_secret_123',
   session: {
     strategy: 'jwt',
