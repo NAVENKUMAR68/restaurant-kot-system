@@ -1,27 +1,10 @@
 import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
-import { MongoDBAdapter } from '@next-auth/mongodb-adapter'
-import { connectToDatabase, getCollection } from './db'
+import { getCollection } from './db'
 import bcryptjs from 'bcryptjs'
 import { User } from './types'
-import { MongoClient } from 'mongodb'
 
-let mongoClient: MongoClient | null = null
-
-async function getMongoClient(): Promise<MongoClient> {
-  if (!mongoClient) {
-    try {
-      const { client } = await connectToDatabase()
-      mongoClient = client
-    } catch (error) {
-      console.error('[v0] Error getting MongoDB client:', error)
-      throw error
-    }
-  }
-  return mongoClient
-}
-
-const authConfig: any = {
+export const { handlers, auth, signIn, signOut } = NextAuth({
   secret: process.env.NEXTAUTH_SECRET || 'smartkot_secret_123',
   session: {
     strategy: 'jwt',
@@ -91,11 +74,4 @@ const authConfig: any = {
   pages: {
     signIn: '/login',
   },
-}
-
-// Add MongoDB adapter if available, otherwise use default
-if (process.env.MONGODB_URI) {
-  authConfig.adapter = MongoDBAdapter(getMongoClient())
-}
-
-export const { handlers, auth, signIn, signOut } = NextAuth(authConfig)
+})
