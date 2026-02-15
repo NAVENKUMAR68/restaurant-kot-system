@@ -21,11 +21,7 @@ async function getMongoClient(): Promise<MongoClient> {
   return mongoClient
 }
 
-// Only initialize adapter if MONGODB_URI is available
-const adapter = process.env.MONGODB_URI ? MongoDBAdapter(getMongoClient()) : undefined
-
-export const { handlers, auth, signIn, signOut } = NextAuth({
-  ...(adapter && { adapter }),
+const authConfig: any = {
   secret: process.env.NEXTAUTH_SECRET || 'smartkot_secret_123',
   session: {
     strategy: 'jwt',
@@ -95,4 +91,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   pages: {
     signIn: '/login',
   },
-})
+}
+
+// Add MongoDB adapter if available, otherwise use default
+if (process.env.MONGODB_URI) {
+  authConfig.adapter = MongoDBAdapter(getMongoClient())
+}
+
+export const { handlers, auth, signIn, signOut } = NextAuth(authConfig)
