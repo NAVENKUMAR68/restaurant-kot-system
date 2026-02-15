@@ -1,6 +1,6 @@
 import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
-import { MongoDBAdapter } from '@auth/mongodb-adapter'
+import { MongoDBAdapter } from 'next-auth/adapters'
 import { connectToDatabase, getCollection } from './db'
 import bcryptjs from 'bcryptjs'
 import { User } from './types'
@@ -19,6 +19,9 @@ async function getMongoClient(): Promise<MongoClient> {
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: MongoDBAdapter(getMongoClient()),
   secret: process.env.NEXTAUTH_SECRET || 'smartkot_secret_123',
+  session: {
+    strategy: 'jwt',
+  },
   providers: [
     Credentials({
       name: 'credentials',
