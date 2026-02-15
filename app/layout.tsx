@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { SessionProvider } from 'next-auth/react'
+import { initializeDatabase } from '@/lib/init-db'
 
 import './globals.css'
 
@@ -12,6 +13,11 @@ export const metadata: Metadata = {
   description: 'Modern restaurant kitchen order tracking and management system',
   generator: 'v0.app',
 }
+
+// Initialize database on app startup
+initializeDatabase().catch((error) => {
+  console.error('[v0] Critical: Failed to initialize database on startup:', error)
+})
 
 export default function RootLayout({
   children,

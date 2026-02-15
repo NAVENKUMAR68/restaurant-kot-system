@@ -6,9 +6,9 @@ import bcryptjs from 'bcryptjs'
 import { User } from './types'
 import { MongoClient } from 'mongodb'
 
-let mongoClient: MongoClient
+let mongoClient: MongoClient | null = null
 
-async function getMongoClient() {
+async function getMongoClient(): Promise<MongoClient> {
   if (!mongoClient) {
     const { client } = await connectToDatabase()
     mongoClient = client
@@ -18,6 +18,7 @@ async function getMongoClient() {
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: MongoDBAdapter(getMongoClient()),
+  secret: process.env.NEXTAUTH_SECRET || 'smartkot_secret_123',
   providers: [
     Credentials({
       name: 'credentials',
