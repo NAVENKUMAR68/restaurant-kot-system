@@ -58,8 +58,21 @@ io.on('connection', (socket) => {
 });
 
 // Routes Placeholder
-app.get('/', (req, res) => {
+app.get('/api', (req, res) => {
     res.send('Smart KOT API is running');
+});
+
+// --- SINGLE PLATFORM DEPLOYMENT: SERVE FRONTEND ---
+import path from 'path';
+const distPath = path.join(__dirname, '../../dist');
+
+// Serve static files from the Vite build
+app.use(express.static(distPath));
+
+// Handle React routing (Catch-all)
+app.get('*', (req, res) => {
+    if (req.path.startsWith('/api')) return; // Don't catch API routes
+    res.sendFile(path.join(distPath, 'index.html'));
 });
 
 // Start Server
