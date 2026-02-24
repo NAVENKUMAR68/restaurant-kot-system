@@ -71,3 +71,13 @@ export const seedMenu = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error seeding menu', error });
     }
 };
+
+export const deleteMenuItem = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        await MenuItem.findByIdAndDelete(id);
+        res.status(200).json({ message: 'Menu item deleted' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error deleting menu item', error });
+    }
+};
