@@ -104,19 +104,12 @@ export default function Navbar() {
                         {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
                     </div>
 
-                    {/* User badge */}
-                    {user ? (
-                        roleConfig && (
-                            <div className={`hidden sm:flex items-center gap-2 rounded-full px-3 py-1.5 text-[10px] md:text-xs font-medium border ${roleConfig.bg}`}>
-                                <UserIcon className={`h-3 w-3 ${roleConfig.color}`} />
-                                <span className="text-white/80 line-clamp-1 max-w-[80px] md:max-w-none">{user.name}</span>
-                                <span className={`${roleConfig.color} font-semibold shrink-0`}>• {roleConfig.label}</span>
-                            </div>
-                        )
-                    ) : (
-                        <div className="hidden sm:flex items-center gap-2 rounded-full px-3 py-1.5 text-[10px] md:text-xs font-medium border bg-white/5 border-white/10">
-                            <UserIcon className="h-3 w-3 text-white/40" />
-                            <span className="text-white/40">Guest User</span>
+                    {/* Staff Badge (Only for Kitchen/Admin) */}
+                    {user && roleConfig && (
+                        <div className={`hidden sm:flex items-center gap-2 rounded-full px-3 py-1.5 text-[10px] md:text-xs font-medium border ${roleConfig.bg}`}>
+                            <UserIcon className={`h-3 w-3 ${roleConfig.color}`} />
+                            <span className="text-white/80 line-clamp-1 max-w-[80px] md:max-w-none">{user.name}</span>
+                            <span className={`${roleConfig.color} font-semibold shrink-0`}>• {roleConfig.label}</span>
                         </div>
                     )}
 
@@ -125,13 +118,13 @@ export default function Navbar() {
                             variant="ghost"
                             size="sm"
                             onClick={user ? handleLogout : () => navigate('/login')}
-                            className={`hidden xs:flex items-center transition-all duration-200 h-8 md:h-9 px-2 md:px-3 rounded-lg border border-transparent ${user
-                                    ? 'text-white/50 hover:text-red-400 hover:bg-red-500/10 hover:border-red-500/20'
-                                    : 'text-cyan-400/70 hover:text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-500/20'
+                            className={`flex items-center transition-all duration-200 h-8 md:h-9 px-2 md:px-3 rounded-lg border border-transparent ${user
+                                ? 'text-white/50 hover:text-red-400 hover:bg-red-500/10 hover:border-red-500/20'
+                                : 'text-cyan-400/70 hover:text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-500/20'
                                 }`}
                         >
-                            <LogOut className={`mr-0 md:mr-1.5 h-3.5 w-3.5 ${!user && 'rotate-180'}`} />
-                            <span className="hidden md:inline text-xs font-bold">{user ? 'Logout' : 'Login'}</span>
+                            <LogOut className={`mr-1.5 h-3.5 w-3.5 ${!user && 'rotate-180'}`} />
+                            <span className="text-xs font-bold">{user ? 'Logout' : 'Staff Login'}</span>
                         </Button>
 
                         {/* Mobile menu toggle */}
@@ -177,8 +170,8 @@ export default function Navbar() {
                                 size="sm"
                                 onClick={user ? handleLogout : () => navigate('/login')}
                                 className={`w-full justify-start h-10 border ${user
-                                        ? 'bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/20'
-                                        : 'bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border-cyan-500/20'
+                                    ? 'bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/20'
+                                    : 'bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border-cyan-500/20'
                                     }`}
                             >
                                 <LogOut className={`mr-2 h-4 w-4 ${!user && 'rotate-180'}`} />
