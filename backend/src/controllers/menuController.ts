@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
+import bcrypt from 'bcryptjs';
 import { MenuItem } from '../models/MenuItem';
+import { User } from '../models/User';
 
 export const getMenuItems = async (req: Request, res: Response) => {
     try {
@@ -32,6 +34,7 @@ export const updateMenuItem = async (req: Request, res: Response) => {
 
 export const seedMenu = async (req: Request, res: Response) => {
     try {
+        // Seed Menu Items
         const menuItems = [
             {
                 name: 'Paneer Butter Masala',
@@ -64,11 +67,36 @@ export const seedMenu = async (req: Request, res: Response) => {
         ];
 
         for (const item of menuItems) {
-            await MenuItem.findOneAndUpdate({ name: item.name }, item, { upsocert: true, new: true, upsert: true });
+            await MenuItem.findOneAndUpdate({ name: item.name }, item, { new: true, upsert: true });
         }
-        res.status(200).json({ message: 'Menu seeded successfully' });
+
+        // Seed Users
+        const users = [
+            {
+                name: 'Admin User',
+                email: 'admin@smartkot.com',
+                password: 'password123',
+                role: 'admin'
+            },
+            {
+                name: 'Kitchen Staff',
+                email: 'kitchen@smartkot.com',
+                password: 'password123',
+                role: 'kitchen'
+            }
+        ];
+
+        for (const userData of users) {
+            const existingUser = await User.findOne({ email: userData.email });
+            if (!existingUser) {
+                const hashedPassword = await bcrypt.hash(userData.password, 12);
+                await User.create({ ...userData, password: hashedPassword });
+            }
+        }
+
+        res.status(200).json({ message: 'Menu and Users seeded successfully' });
     } catch (error) {
-        res.status(500).json({ message: 'Error seeding menu', error });
+        res.status(500).json({ message: 'Error seeding database', error });
     }
 };
 
