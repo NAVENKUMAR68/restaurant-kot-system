@@ -5,6 +5,7 @@ const router = express.Router();
 
 // Public route to view menu
 router.get('/', getMenuItems);
+router.get('/seed', seedMenu);
 
 // Protected routes (TODO: Add middleware for Admin only)
 router.post('/', createMenuItem);
