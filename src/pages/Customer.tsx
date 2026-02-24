@@ -600,16 +600,26 @@ export default function Customer() {
                         </div>
                         <div className="mb-5 rounded-xl bg-white/5 border border-white/5 p-3">
                             <p className="text-xs text-white/40 mb-2">Order Summary</p>
-                            {items.map(it => (
-                                <div key={it.id} className="flex justify-between text-sm text-white/70 py-0.5">
-                                    <span>{it.name} ×{it.quantity}</span>
-                                    <span>₹{it.price * it.quantity}</span>
-                                </div>
-                            ))}
-                            <div className="border-t border-white/10 mt-2 pt-2 flex justify-between font-bold">
-                                <span className="text-white">Total</span>
-                                <span className="neon-text-cyan">₹{total}</span>
-                            </div>
+                            {(() => {
+                                const unpaid = myOrders.filter(o => o.paymentMethod === 'pending' && o.status !== 'cancelled');
+                                const unpaidItems = unpaid.flatMap(o => o.items);
+                                const unpaidTotal = unpaid.reduce((s, o) => s + o.totalAmount, 0);
+
+                                return (
+                                    <>
+                                        {unpaidItems.map((it, idx) => (
+                                            <div key={idx} className="flex justify-between text-sm text-white/70 py-0.5">
+                                                <span>{it.name} ×{it.quantity}</span>
+                                                <span>₹{it.price * it.quantity}</span>
+                                            </div>
+                                        ))}
+                                        <div className="border-t border-white/10 mt-2 pt-2 flex justify-between font-bold">
+                                            <span className="text-white">Total</span>
+                                            <span className="neon-text-cyan">₹{unpaidTotal.toFixed(2)}</span>
+                                        </div>
+                                    </>
+                                );
+                            })()}
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             <button

@@ -70,7 +70,7 @@ const distPath = path.join(__dirname, '../../dist');
 app.use(express.static(distPath));
 
 // Handle React routing (Catch-all)
-app.get('*', (req, res) => {
+app.get('/*splat', (req, res) => {
     if (req.path.startsWith('/api')) return; // Don't catch API routes
     res.sendFile(path.join(distPath, 'index.html'));
 });
