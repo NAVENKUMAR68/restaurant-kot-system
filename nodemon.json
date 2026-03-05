@@ -1,0 +1,14 @@
+{
+    "watch": [
+        "backend/src"
+    ],
+    "ext": "ts",
+    "ignore": [
+        "backend/dist"
+    ],
+    "exec": "npx tsc -p backend/tsconfig.json && node backend/dist/index.js",
+    "env": {
+        "NODE_ENV": "development"
+    },
+    "shell": true
+}
