@@ -1,0 +1,16 @@
+node_modules
+.git
+.env
+dist
+build
+backend/
+Dockerfile
+docker-compose.yml
+docker-compose.override.yml
+Jenkinsfile
+k8s/
+*.log
+.DS_Store
+.gitignore
+README.md
+RUNNING.md

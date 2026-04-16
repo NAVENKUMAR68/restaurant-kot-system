@@ -32,3 +32,9 @@ walkthrough.md
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Kubernetes secrets (contain real credentials — never commit)
+k8s/backend-secret.yaml
+
+# Docker Compose local overrides
+docker-compose.override.yml

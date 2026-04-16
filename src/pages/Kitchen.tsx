@@ -49,7 +49,7 @@ const STATUS_CONFIG = {
     cancelled: { label: 'Cancelled', cls: 'status-cancelled', next: null, nextLabel: null, Icon: XCircle },
 };
 
-function OrderCard({ order, onUpdate, updating }: { order: Order; onUpdate: (id: string, status: string) => void; updating: string | null }) {
+function OrderCard({ order, onUpdate, onCancel, updating }: { order: Order; onUpdate: (id: string, status: string) => void; onCancel: (id: string) => void; updating: string | null }) {
     const elapsed = useTimer(order.createdAt);
     const cfg = STATUS_CONFIG[order.status];
     const StatusIcon = cfg.Icon;
@@ -106,7 +106,7 @@ function OrderCard({ order, onUpdate, updating }: { order: Order; onUpdate: (id:
                     </button>
                     <button
                         disabled={isUpdating}
-                        onClick={() => onUpdate(order._id, 'cancelled')}
+                        onClick={() => onCancel(order._id)}
                         className="rounded-lg border border-red-500/20 bg-red-500/5 px-3 py-2 text-xs text-red-400 hover:bg-red-500/10 hover:border-red-500/40 disabled:opacity-40 transition-all flex items-center justify-center"
                     >
                         <XCircle className="h-4 w-4" />
@@ -149,14 +149,19 @@ export default function Kitchen() {
             playPing();
         });
 
-        socket.on('order-status-updated', (updated: Order) => {
+        socket.on('order-updated', (updated: Order) => {
             setOrders(prev => prev.map(o => o._id === updated._id ? updated : o));
+        });
+
+        socket.on('order-deleted', (deletedId: string) => {
+            setOrders(prev => prev.filter(o => o._id !== deletedId));
         });
 
         return () => {
             socket.disconnect();
             socket.off('new-order');
-            socket.off('order-status-updated');
+            socket.off('order-updated');
+            socket.off('order-deleted');
         };
     }, [soundEnabled]);
 
@@ -173,10 +178,29 @@ export default function Kitchen() {
 
     const updateStatus = async (orderId: string, newStatus: string) => {
         setUpdating(orderId);
+        // Optimistic update — move immediately without waiting for socket
+        setOrders(prev => prev.map(o => o._id === orderId ? { ...o, status: newStatus as Order['status'] } : o));
         try {
-            await api.put(`/orders/${orderId}`, { status: newStatus });
+            await api.patch(`/orders/${orderId}/status`, { status: newStatus });
         } catch (err) {
             console.error('Failed to update order:', err);
+            // Revert on failure by re-fetching
+            fetchOrders();
+        } finally {
+            setUpdating(null);
+        }
+    };
+
+    const cancelOrder = async (orderId: string) => {
+        setUpdating(orderId);
+        // Optimistic update — remove immediately
+        setOrders(prev => prev.filter(o => o._id !== orderId));
+        try {
+            await api.delete(`/orders/${orderId}`);
+        } catch (err) {
+            console.error('Failed to cancel order:', err);
+            // Revert on failure
+            fetchOrders();
         } finally {
             setUpdating(null);
         }
@@ -248,7 +272,7 @@ export default function Kitchen() {
                                 ) : (
                                     <div className="kanban-col">
                                         {colOrders.map(order => (
-                                            <OrderCard key={order._id} order={order} onUpdate={updateStatus} updating={updating} />
+                                            <OrderCard key={order._id} order={order} onUpdate={updateStatus} onCancel={cancelOrder} updating={updating} />
                                         ))}
                                     </div>
                                 )}

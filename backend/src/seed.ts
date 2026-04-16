@@ -22,18 +22,39 @@ const menuItems = [
         image: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=300&auto=format&fit=crop'
     },
     {
-        name: 'Veg Spring Rolls',
-        description: 'Crispy rolls filled with fresh vegetables',
-        price: 180,
-        category: 'Starters',
-        image: 'https://images.unsplash.com/photo-1544025162-d7669d5fa212?q=80&w=300&auto=format&fit=crop'
-    },
-    {
         name: 'Chocolate Brownie',
         description: 'Fudgy brownie with walnuts',
         price: 150,
         category: 'Desserts',
         image: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?q=80&w=300&auto=format&fit=crop'
+    },
+    {
+        name: 'Margherita Pizza',
+        description: 'Classic cheese pizza with fresh basil',
+        price: 300,
+        category: 'Main Course',
+        image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?q=80&w=300&auto=format&fit=crop'
+    },
+    {
+        name: 'Classic Cheeseburger',
+        description: 'Juicy beef patty with cheddar cheese and lettuce',
+        price: 200,
+        category: 'Main Course',
+        image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=300&auto=format&fit=crop'
+    },
+    {
+        name: 'Caesar Salad',
+        description: 'Romaine lettuce with croutons and parmesan',
+        price: 160,
+        category: 'Starters',
+        image: 'https://images.unsplash.com/photo-1550304943-4f24f54ddde9?q=80&w=300&auto=format&fit=crop'
+    },
+    {
+        name: 'Penne Arrabbiata',
+        description: 'Pasta in spicy tomato sauce',
+        price: 220,
+        category: 'Main Course',
+        image: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?q=80&w=300&auto=format&fit=crop'
     }
 ];
 

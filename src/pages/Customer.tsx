@@ -103,7 +103,7 @@ export default function Customer() {
         }
         setGuestId(gid);
 
-        socket.on('order-status-updated', (order: Order) => {
+        socket.on('order-updated', (order: Order) => {
             setMyOrders(prev =>
                 prev.map(o => o._id === order._id ? { ...o, ...order } : o)
             );
@@ -112,7 +112,7 @@ export default function Customer() {
 
         return () => {
             socket.disconnect();
-            socket.off('order-status-updated');
+            socket.off('order-updated');
         };
     }, []);
 

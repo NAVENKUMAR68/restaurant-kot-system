@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kot-frontend-service
+  labels:
+    app: kot-frontend
+spec:
+  selector:
+    app: kot-frontend
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: LoadBalancer

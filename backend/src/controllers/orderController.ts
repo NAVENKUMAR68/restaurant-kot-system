@@ -67,10 +67,26 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
             return res.status(404).json({ message: 'Order not found' });
         }
 
-        io.emit('order-status-updated', updatedOrder);
+        io.emit('order-updated', updatedOrder);
         res.status(200).json(updatedOrder);
     } catch (error) {
         res.status(500).json({ message: 'Error updating order', error });
+    }
+};
+
+export const cancelOrder = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const deletedOrder = await Order.findByIdAndDelete(id);
+
+        if (!deletedOrder) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+
+        io.emit('order-deleted', id);
+        res.status(200).json({ message: 'Order cancelled', id });
+    } catch (error) {
+        res.status(500).json({ message: 'Error cancelling order', error });
     }
 };
 
@@ -94,7 +110,7 @@ export const payByCustomer = async (req: Request, res: Response) => {
         // Fetch the updated orders to emit status updates if needed
         const updatedOrders = await Order.find({ customer: customerId, paymentId: updateData.paymentId });
         updatedOrders.forEach(order => {
-            io.emit('order-status-updated', order);
+            io.emit('order-updated', order);
         });
 
         res.status(200).json({ message: 'Bill paid successfully', count: result.modifiedCount });

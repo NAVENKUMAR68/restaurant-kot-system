@@ -1,20 +1,21 @@
-# Build Stage
-FROM node:22-slim AS builder
+# ---- Stage 1: Build ----
+FROM node:20 AS build
+
 WORKDIR /app
+
 COPY package*.json ./
 RUN npm install
+
 COPY . .
-RUN npm run build
 
-# Run Stage
-FROM node:22-slim
-WORKDIR /app
-# Only copy the built files and production dependencies
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/backend/package.json ./backend/package.json
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/backend/dist ./backend/dist
+RUN npx vite build
 
-EXPOSE 8000
-CMD ["npm", "run", "start"]
+# ---- Stage 2: Serve ----
+FROM nginx:alpine
+
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
