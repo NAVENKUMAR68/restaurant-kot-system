@@ -49,12 +49,25 @@ pipeline {
             }
         }
 
+        stage('Create .env File') {
+            steps {
+                sh '''
+                echo "MONGODB_URI=mongodb://mongo:27017/kot" > .env
+                echo "JWT_SECRET=secret123" >> .env
+                echo "RAZORPAY_KEY_ID=dummy" >> .env
+                echo "RAZORPAY_KEY_SECRET=dummy" >> .env
+                echo "FRONTEND_URL=http://localhost:5173" >> .env
+                cat .env
+                '''
+            }
+        }
+
         stage('Deploy with Docker Compose') {
             steps {
                 sh '''
-                docker-compose down --remove-orphans || true
-                docker-compose pull || true
-                docker-compose up -d --build
+                docker compose down --remove-orphans || true
+                docker compose pull || true
+                docker compose up -d --build
                 '''
             }
         }
@@ -62,14 +75,15 @@ pipeline {
         stage('Debug Containers') {
             steps {
                 sh 'docker ps -a'
+                sh 'docker compose logs || true'
                 sh 'docker logs smart-kot-backend || true'
             }
         }
 
         stage('Health Check') {
             steps {
-                sh 'sleep 10'
-                sh 'docker exec smart-kot-backend curl http://localhost:8000/api/health'
+                sh 'sleep 15'
+                sh 'docker exec smart-kot-backend curl -f http://localhost:8000/api/health'
             }
         }
     }
@@ -80,7 +94,7 @@ pipeline {
         }
         failure {
             echo '❌ Pipeline failed. Check logs above for details.'
-            sh 'docker-compose logs || true'
+            sh 'docker compose logs || true'
         }
         always {
             sh 'docker logout || true'
