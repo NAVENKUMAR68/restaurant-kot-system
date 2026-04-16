@@ -61,8 +61,8 @@ pipeline {
                 cat <<EOF > .env
 MONGODB_URI=mongodb://mongodb:27017/kot
 JWT_SECRET=secret123
-RAZORPAY_KEY_ID=dummy
-RAZORPAY_KEY_SECRET=dummy
+RAZORPAY_KEY_ID=rzp_test_Se8eY9hlUP4j6p
+RAZORPAY_KEY_SECRET=CL15kwHX1cjiRTyA6A6BIB0e
 FRONTEND_URL=http://localhost:5173
 EOF
                 '''
