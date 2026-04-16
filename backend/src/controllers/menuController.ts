@@ -101,6 +101,7 @@ export const seedMenu = async (req: Request, res: Response) => {
             }
         }
 
+        cacheInvalidate(CACHE_KEYS.MENU);
         res.status(200).json({ message: 'Menu and Users seeded successfully' });
     } catch (error) {
         res.status(500).json({ message: 'Error seeding database', error });
