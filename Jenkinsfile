@@ -61,7 +61,7 @@ pipeline {
             steps {
                 sh 'sleep 10'
                 sh 'docker ps --filter "name=smart-kot"'
-                sh 'curl -f http://localhost:8000/api/health || exit 1'
+                sh 'docker exec smart-kot-backend curl -f http://localhost:8000/api/health || exit 1'
                 sh 'docker-compose logs --tail=20'
             }
         }
