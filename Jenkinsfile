@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_USER = 'navenkumar68'
+        DOCKERHUB_USER = 'navenkumars'
         FRONTEND_IMAGE = "${DOCKERHUB_USER}/smart-kot-frontend"
         BACKEND_IMAGE  = "${DOCKERHUB_USER}/smart-kot-backend"
         IMAGE_TAG      = "${env.BUILD_NUMBER}"
