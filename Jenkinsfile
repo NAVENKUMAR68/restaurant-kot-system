@@ -52,12 +52,13 @@ pipeline {
         stage('Create .env File') {
             steps {
                 sh '''
-                echo "MONGODB_URI=mongodb://mongo:27017/kot" > .env
-                echo "JWT_SECRET=secret123" >> .env
-                echo "RAZORPAY_KEY_ID=dummy" >> .env
-                echo "RAZORPAY_KEY_SECRET=dummy" >> .env
-                echo "FRONTEND_URL=http://localhost:5173" >> .env
-                cat .env
+                cat <<EOF > .env
+MONGODB_URI=mongodb://mongo:27017/kot
+JWT_SECRET=secret123
+RAZORPAY_KEY_ID=dummy
+RAZORPAY_KEY_SECRET=dummy
+FRONTEND_URL=http://localhost:5173
+EOF
                 '''
             }
         }
@@ -66,7 +67,6 @@ pipeline {
             steps {
                 sh '''
                 docker compose down --remove-orphans || true
-                docker compose pull || true
                 docker compose up -d --build
                 '''
             }
@@ -76,7 +76,6 @@ pipeline {
             steps {
                 sh 'docker ps -a'
                 sh 'docker compose logs || true'
-                sh 'docker logs smart-kot-backend || true'
             }
         }
 
