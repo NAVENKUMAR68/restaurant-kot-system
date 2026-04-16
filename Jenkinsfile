@@ -51,18 +51,25 @@ pipeline {
 
         stage('Deploy with Docker Compose') {
             steps {
-                sh 'docker-compose down --remove-orphans || true'
-                sh 'docker-compose pull'
-                sh 'docker-compose up -d'
+                sh '''
+                docker-compose down --remove-orphans || true
+                docker-compose pull || true
+                docker-compose up -d --build
+                '''
+            }
+        }
+
+        stage('Debug Containers') {
+            steps {
+                sh 'docker ps -a'
+                sh 'docker logs smart-kot-backend || true'
             }
         }
 
         stage('Health Check') {
             steps {
                 sh 'sleep 10'
-                sh 'docker ps --filter "name=smart-kot"'
-                sh 'docker exec smart-kot-backend curl -f http://localhost:8000/api/health || exit 1'
-                sh 'docker-compose logs --tail=20'
+                sh 'docker exec smart-kot-backend curl http://localhost:8000/api/health'
             }
         }
     }

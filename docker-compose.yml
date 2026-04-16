@@ -18,13 +18,8 @@ services:
       - "8000:8000"
     depends_on:
       - mongodb
-    environment:
-      - MONGODB_URI=${MONGODB_URI}
-      - JWT_SECRET=${JWT_SECRET}
-      - RAZORPAY_KEY_ID=${RAZORPAY_KEY_ID}
-      - RAZORPAY_KEY_SECRET=${RAZORPAY_KEY_SECRET}
-      - PORT=8000
-      - FRONTEND_URL=${FRONTEND_URL}
+    env_file:
+      - .env
     networks:
       - kot-network
 
