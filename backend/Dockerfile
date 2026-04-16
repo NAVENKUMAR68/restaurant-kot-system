@@ -1,28 +1,40 @@
 # ---- Stage 1: Build ----
-FROM node:20 AS build
+FROM node:20-alpine AS build
+
+# Install build dependencies for potential native modules
+RUN apk add --no-cache python3 make g++
 
 WORKDIR /app
 
-# Install ALL dependencies (including devDeps for TypeScript compiler)
+# Install dependencies using npm ci for deterministic builds
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
-# Copy source and compile TypeScript → dist/
+# Copy source and compile TypeScript
 COPY . .
 RUN npm run build
 
 # ---- Stage 2: Production Runtime ----
-FROM node:20-slim
+FROM node:20-alpine
+
+# Set to production
+ENV NODE_ENV=production
 
 WORKDIR /app
 
-# Only install production dependencies (no TypeScript compiler in final image)
+# Install curl for health checks and production-only dependencies
+RUN apk add --no-cache curl
+
 COPY package*.json ./
-RUN npm install --omit=dev && apt-get update && apt-get install -y curl
+RUN npm ci --omit=dev
 
 # Copy compiled output from build stage
 COPY --from=build /app/dist ./dist
 
 EXPOSE 8000
+
+# Run as non-root user for security
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+USER appuser
 
 CMD ["node", "dist/index.js"]
