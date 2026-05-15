@@ -6,11 +6,16 @@ import { io } from '../index';
 
 const router = express.Router();
 
-// Initialize Razorpay
-const razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID!,
-    key_secret: process.env.RAZORPAY_KEY_SECRET!,
-});
+// Initialize Razorpay lazily so server starts even if keys are not set
+function getRazorpay() {
+    if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+        throw new Error('Razorpay keys are not configured');
+    }
+    return new Razorpay({
+        key_id: process.env.RAZORPAY_KEY_ID,
+        key_secret: process.env.RAZORPAY_KEY_SECRET,
+    });
+}
 
 /**
  * POST /api/payment/create-order
@@ -30,7 +35,7 @@ router.post('/create-order', async (req: Request, res: Response) => {
             receipt: receipt || `receipt_${Date.now()}`,
         };
 
-        const razorpayOrder = await razorpay.orders.create(options);
+        const razorpayOrder = await getRazorpay().orders.create(options);
 
         res.status(200).json({
             id: razorpayOrder.id,
@@ -64,7 +69,7 @@ router.post('/verify', async (req: Request, res: Response) => {
 
         // --- Signature Verification ---
         const expectedSignature = crypto
-            .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET!)
+            .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET || '')
             .update(`${razorpay_order_id}|${razorpay_payment_id}`)
             .digest('hex');
 
